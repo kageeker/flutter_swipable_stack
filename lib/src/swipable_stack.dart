@@ -352,83 +352,83 @@ class _SwipableStackState extends State<SwipableStack>
         _assertLayout(constraints);
         _areConstraints = constraints;
         return GestureDetector(
-          behavior: widget.hitTestBehavior,
-          dragStartBehavior: widget.dragStartBehavior,
-          onPanStart: (d) {
-            if (!canSwipe) {
-              return;
-            }
+          // behavior: widget.hitTestBehavior,
+          // dragStartBehavior: widget.dragStartBehavior,
+          // onPanStart: (d) {
+          //   if (!canSwipe) {
+          //     return;
+          //   }
 
-            if (_swipeCancelAnimationController.animating) {
-              _swipeCancelAnimationController
-                ..stop()
-                ..reset();
-            }
-            widget.controller._updateSwipe(
-              _SwipableStackPosition(
-                realLocal: d.localPosition,
-                start: d.globalPosition,
-                real: d.globalPosition,
-                animationValue: 0,
-              ),
-            );
+          //   if (_swipeCancelAnimationController.animating) {
+          //     _swipeCancelAnimationController
+          //       ..stop()
+          //       ..reset();
+          //   }
+          //   widget.controller._updateSwipe(
+          //     _SwipableStackPosition(
+          //       realLocal: d.localPosition,
+          //       start: d.globalPosition,
+          //       real: d.globalPosition,
+          //       animationValue: 0,
+          //     ),
+          //   );
 
-            // This line must be executed in any case, so that the listeners of
-            // the animation are called. Even if the duration of the animation
-            // is zero.
-            _dragStartController.forward(from: 0);
-          },
-          onPanUpdate: (d) {
-            if (!canSwipe) {
-              return;
-            }
-            if (_swipeCancelAnimationController.animating) {
-              _swipeCancelAnimationController
-                ..stop()
-                ..reset();
-            }
-            //do not update dy if vertical swipe is not allowed
-            final updated = _currentSession?.copyWith(
-              realPosition: widget.allowVerticalSwipe
-                  ? d.globalPosition
-                  : Offset(d.globalPosition.dx, _currentSession!.current.dy),
-            );
-            widget.controller._updateSwipe(
-              updated ??
-                  _SwipableStackPosition(
-                    realLocal: d.localPosition,
-                    start: d.globalPosition,
-                    real: d.globalPosition,
-                    animationValue: 1,
-                  ),
-            );
-          },
-          onPanEnd: (d) {
-            if (!canSwipe) {
-              return;
-            }
-            final swipeAssistDirection = _currentSession?.swipeAssistDirection(
-              constraints: constraints,
-              horizontalSwipeThreshold: widget.horizontalSwipeThreshold,
-              verticalSwipeThreshold: widget.verticalSwipeThreshold,
-              detectableDirections: widget.detectableSwipeDirections,
-            );
+          //   // This line must be executed in any case, so that the listeners of
+          //   // the animation are called. Even if the duration of the animation
+          //   // is zero.
+          //   _dragStartController.forward(from: 0);
+          // },
+          // onPanUpdate: (d) {
+          //   if (!canSwipe) {
+          //     return;
+          //   }
+          //   if (_swipeCancelAnimationController.animating) {
+          //     _swipeCancelAnimationController
+          //       ..stop()
+          //       ..reset();
+          //   }
+          //   //do not update dy if vertical swipe is not allowed
+          //   final updated = _currentSession?.copyWith(
+          //     realPosition: widget.allowVerticalSwipe
+          //         ? d.globalPosition
+          //         : Offset(d.globalPosition.dx, _currentSession!.current.dy),
+          //   );
+          //   widget.controller._updateSwipe(
+          //     updated ??
+          //         _SwipableStackPosition(
+          //           realLocal: d.localPosition,
+          //           start: d.globalPosition,
+          //           real: d.globalPosition,
+          //           animationValue: 1,
+          //         ),
+          //   );
+          // },
+          // onPanEnd: (d) {
+          //   if (!canSwipe) {
+          //     return;
+          //   }
+          //   final swipeAssistDirection = _currentSession?.swipeAssistDirection(
+          //     constraints: constraints,
+          //     horizontalSwipeThreshold: widget.horizontalSwipeThreshold,
+          //     verticalSwipeThreshold: widget.verticalSwipeThreshold,
+          //     detectableDirections: widget.detectableSwipeDirections,
+          //   );
 
-            if (swipeAssistDirection == null) {
-              _cancelSwipe();
-              return;
-            }
-            final allowMoveNext = widget.onWillMoveNext?.call(
-                  _currentIndex,
-                  swipeAssistDirection,
-                ) ??
-                true;
-            if (!allowMoveNext) {
-              _cancelSwipe();
-              return;
-            }
-            _swipeNext(swipeAssistDirection);
-          },
+          //   if (swipeAssistDirection == null) {
+          //     _cancelSwipe();
+          //     return;
+          //   }
+          //   final allowMoveNext = widget.onWillMoveNext?.call(
+          //         _currentIndex,
+          //         swipeAssistDirection,
+          //       ) ??
+          //       true;
+          //   if (!allowMoveNext) {
+          //     _cancelSwipe();
+          //     return;
+          //   }
+          //   _swipeNext(swipeAssistDirection);
+          // },
           child: Stack(
             clipBehavior: widget.stackClipBehaviour,
             children: _buildCards(
