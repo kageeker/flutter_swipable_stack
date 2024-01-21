@@ -61,6 +61,7 @@ class _BasicExampleState extends State<BasicExample> {
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: SwipableStack(
+                  gesturesEnabled: false,
                   detectableSwipeDirections: const {
                     SwipeDirection.right,
                     SwipeDirection.left,

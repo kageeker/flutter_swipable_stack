@@ -19,6 +19,7 @@ const _kStackMaxCount = 3;
 /// vertically with beautiful animations.
 class SwipableStack extends StatefulWidget {
   SwipableStack({
+    super.key,
     required this.builder,
     SwipableStackController? controller,
     this.onSwipeCompleted,
@@ -39,6 +40,7 @@ class SwipableStack extends StatefulWidget {
     this.hitTestBehavior = HitTestBehavior.deferToChild,
     this.dragStartDuration = const Duration(milliseconds: 150),
     this.dragStartCurve = Curves.easeOut,
+    this.gesturesEnabled = true,
   })  : controller = controller ?? SwipableStackController(),
         cancelAnimationCurve =
             cancelAnimationCurve ?? _defaultCancelAnimationCurve,
@@ -47,14 +49,17 @@ class SwipableStack extends StatefulWidget {
         assert(0 <= viewFraction && viewFraction <= 1),
         assert(0 <= horizontalSwipeThreshold && horizontalSwipeThreshold <= 1),
         assert(0 <= verticalSwipeThreshold && verticalSwipeThreshold <= 1),
-        assert(itemCount == null || itemCount >= 0),
-        super(key: controller?._swipableStackStateKey);
+        assert(itemCount == null || itemCount >= 0);
 
   /// Builder for items to be displayed in [SwipableStack].
   final SwipableStackItemBuilder builder;
 
   /// An object to manipulate the [SwipableStack].
   final SwipableStackController controller;
+
+  /// Whether the stack should accept input.
+  /// Set to false when using controller to control the stack
+  final bool gesturesEnabled;
 
   /// Callback called when the Swipe is completed.
   final SwipeCompletionCallback? onSwipeCompleted;
@@ -299,6 +304,7 @@ class _SwipableStackState extends State<SwipableStack>
   @override
   void initState() {
     super.initState();
+    widget.controller.registerCallbacks(_next, _rewind);
     widget.controller.addListener(_listenController);
     _dragStartController = AnimationController(
       vsync: this,
@@ -351,6 +357,22 @@ class _SwipableStackState extends State<SwipableStack>
       builder: (context, constraints) {
         _assertLayout(constraints);
         _areConstraints = constraints;
+        final stack = Stack(
+          clipBehavior: widget.stackClipBehaviour,
+          children: _buildCards(
+            context,
+            constraints,
+          ),
+        );
+        if (!widget.gesturesEnabled) {
+          return Stack(
+            clipBehavior: widget.stackClipBehaviour,
+            children: _buildCards(
+              context,
+              constraints,
+            ),
+          );
+        }
         return GestureDetector(
           behavior: widget.hitTestBehavior,
           dragStartBehavior: widget.dragStartBehavior,
@@ -429,13 +451,7 @@ class _SwipableStackState extends State<SwipableStack>
             }
             _swipeNext(swipeAssistDirection);
           },
-          child: Stack(
-            clipBehavior: widget.stackClipBehaviour,
-            children: _buildCards(
-              context,
-              constraints,
-            ),
-          ),
+          child: stack,
         );
       },
     );

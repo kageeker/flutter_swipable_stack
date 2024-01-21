@@ -1,5 +1,15 @@
 part of 'swipable_stack.dart';
 
+typedef SwipableStackNextCallback = void Function({
+  Duration? duration,
+  required bool ignoreOnWillMoveNext,
+  required bool shouldCallCompletionCallback,
+  required SwipeDirection swipeDirection,
+});
+
+typedef SwipableStackRewindCallback = void Function(
+    {required Duration duration});
+
 /// An object to manipulate the [SwipableStack].
 class SwipableStackController extends ChangeNotifier {
   SwipableStackController({
@@ -7,8 +17,8 @@ class SwipableStackController extends ChangeNotifier {
   })  : _currentIndex = initialIndex,
         assert(initialIndex >= 0);
 
-  /// The key for [SwipableStack] to control.
-  final _swipableStackStateKey = GlobalKey<_SwipableStackState>();
+  // /// The key for [SwipableStack] to control.
+  // final _swipableStackStateKey = GlobalKey<_SwipableStackState>();
 
   int _currentIndex;
 
@@ -82,7 +92,7 @@ class SwipableStackController extends ChangeNotifier {
     bool ignoreOnWillMoveNext = false,
     Duration? duration,
   }) {
-    _swipableStackStateKey.currentState?._next(
+    _next?.call(
       swipeDirection: swipeDirection,
       shouldCallCompletionCallback: shouldCallCompletionCallback,
       ignoreOnWillMoveNext: ignoreOnWillMoveNext,
@@ -96,8 +106,17 @@ class SwipableStackController extends ChangeNotifier {
   void rewind({
     Duration duration = SwipableStack._defaultRewindDuration,
   }) {
-    _swipableStackStateKey.currentState?._rewind(
+    _rewind?.call(
       duration: duration,
     );
+  }
+
+  SwipableStackNextCallback? _next;
+  SwipableStackRewindCallback? _rewind;
+
+  registerCallbacks(
+      SwipableStackNextCallback next, SwipableStackRewindCallback rewind) {
+    _next = next;
+    _rewind = _rewind;
   }
 }
